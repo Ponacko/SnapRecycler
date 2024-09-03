@@ -18,31 +18,27 @@ class GridLayoutManager(
         if (itemCount == 0) {
             return
         }
-        val totalWidth = width
-        val totalHeight = height
-        val itemWidth = totalWidth / numColumns
-        val itemHeight = totalHeight / numRows
-
-        var leftOffset = 0
-        var topOffset = 0
+        val itemsPerGrid = numRows * numColumns
+        val grids = (itemCount + itemsPerGrid - 1) / itemsPerGrid // remainder results in an additional grid
+        val gridWidth = width / grids
+        val gridHeight = height
+        val itemWidth = gridWidth / numColumns
+        val itemHeight = gridHeight / numRows
 
         for (position in 0 until itemCount) {
+            val gridIndex = position / itemsPerGrid
+            val indexInGrid = position % itemsPerGrid
+            val columnIndex = indexInGrid % numColumns
+            val rowIndex = indexInGrid / numColumns
+
+            val leftOffset = gridIndex * gridWidth + columnIndex * itemWidth
+            val topOffset = rowIndex * itemHeight
+
             val view = recycler.getViewForPosition(position)
             addView(view)
 
-            val left = leftOffset
-            val right = left + width
-            val top = topOffset
-            val bottom = top + itemHeight
             measureChildWithMargins(view, 0, 0)
-            layoutDecorated(view, left, top, right, bottom)
-
-            // calculate new offsets
-            leftOffset += itemWidth
-            if ((position + 1) % numColumns == 0) {
-                leftOffset = 0
-                topOffset += itemHeight
-            }
+            layoutDecorated(view, leftOffset, topOffset, leftOffset + itemWidth, topOffset + itemHeight)
         }
     }
 
