@@ -26,16 +26,16 @@ class GridLayoutManager(
         val itemHeight = height / numRows
 
         for (position in 0 until itemCount) {
-            val gridIndex = position / itemsPerPage
-            val indexInGrid = position % itemsPerPage
-            val columnIndex = indexInGrid % numColumns
-            val rowIndex = indexInGrid / numColumns
+            val pageIndex = position / itemsPerPage
+            val indexInPage = position % itemsPerPage
+            val columnIndex = indexInPage % numColumns
+            val rowIndex = indexInPage / numColumns
 
             val leftOffset: Int = if (isRTL()) {
                 // In RTL, start from the right and subtract the width
-                (pages - gridIndex) * pageWidth - (columnIndex + 1) * itemWidth
+                (pages - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth
             } else {
-                gridIndex * pageWidth + columnIndex * itemWidth
+                pageIndex * pageWidth + columnIndex * itemWidth
             }
             val topOffset = rowIndex * itemHeight
 
