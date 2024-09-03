@@ -11,5 +11,10 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(2, 5)
+
+        // Sample data
+        val itemList = List(20) { GridItem("Item ${it + 1}") }
+        val adapter = GridAdapter(itemList)
+        recyclerView.adapter = adapter
     }
 }
