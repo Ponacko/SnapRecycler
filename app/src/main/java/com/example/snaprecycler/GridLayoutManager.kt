@@ -1,13 +1,20 @@
 package com.example.snaprecycler
 
+import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 
 class GridLayoutManager(
     private val numRows: Int,
-    private val numColumns: Int
+    private val numColumns: Int,
+    private val context: Context
 ) : RecyclerView.LayoutManager() {
+
+
+    private var horizontalScrollOffset = 0
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams =
         RecyclerView.LayoutParams(
@@ -19,9 +26,8 @@ class GridLayoutManager(
         if (itemCount == 0) {
             return
         }
-        val itemsPerPage = numRows * numColumns
-        val pages = (itemCount + itemsPerPage - 1) / itemsPerPage // remainder results in an additional grid
-        val pageWidth = width / pages
+        val itemsPerPage = getItemsPerPage()
+        val pageWidth = width
         val itemWidth = pageWidth / numColumns
         val itemHeight = height / numRows
 
@@ -33,7 +39,7 @@ class GridLayoutManager(
 
             val leftOffset: Int = if (isRTL()) {
                 // In RTL, start from the right and subtract the width
-                (pages - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth
+                (getNumberOfPages() - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth
             } else {
                 pageIndex * pageWidth + columnIndex * itemWidth
             }
@@ -47,9 +53,35 @@ class GridLayoutManager(
         }
     }
 
-    private fun isRTL(): Boolean {
-        val isRTL = layoutDirection == View.LAYOUT_DIRECTION_RTL
-        return isRTL
+    override fun canScrollHorizontally(): Boolean = true
+
+    override fun scrollHorizontallyBy(dx: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
+        val delta = scrollByInternal(dx)
+        offsetChildrenHorizontal(-delta)
+        return delta
     }
 
+    private fun scrollByInternal(dx: Int): Int {
+        var delta = dx
+        val totalWidth = width * getNumberOfPages()
+
+        if (horizontalScrollOffset + delta < 0) {
+            delta = -horizontalScrollOffset
+        } else if (horizontalScrollOffset + delta > totalWidth - width) {
+            delta = totalWidth - width - horizontalScrollOffset
+        }
+
+        horizontalScrollOffset += delta
+        return delta
+    }
+
+    // remainder results in an additional page
+    private fun getNumberOfPages(): Int {
+        val itemsPerPage = getItemsPerPage()
+        return (itemCount + itemsPerPage - 1) / itemsPerPage
+    }
+
+    private fun getItemsPerPage() = numRows * numColumns
+
+    private fun isRTL() = layoutDirection == View.LAYOUT_DIRECTION_RTL
 }
