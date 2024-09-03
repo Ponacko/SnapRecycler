@@ -1,5 +1,6 @@
 package com.example.snaprecycler
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
@@ -31,7 +32,12 @@ class GridLayoutManager(
             val columnIndex = indexInGrid % numColumns
             val rowIndex = indexInGrid / numColumns
 
-            val leftOffset = gridIndex * gridWidth + columnIndex * itemWidth
+            val leftOffset: Int = if (isRTL()) {
+                // In RTL, start from the right and subtract the width
+                (grids - gridIndex) * gridWidth - (columnIndex + 1) * itemWidth
+            } else {
+                gridIndex * gridWidth + columnIndex * itemWidth
+            }
             val topOffset = rowIndex * itemHeight
 
             val view = recycler.getViewForPosition(position)
@@ -40,6 +46,11 @@ class GridLayoutManager(
             measureChildWithMargins(view, 0, 0)
             layoutDecorated(view, leftOffset, topOffset, leftOffset + itemWidth, topOffset + itemHeight)
         }
+    }
+
+    private fun isRTL(): Boolean {
+        val isRTL = layoutDirection == View.LAYOUT_DIRECTION_RTL
+        return isRTL
     }
 
 }
