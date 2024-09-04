@@ -2,6 +2,7 @@ package com.example.snaprecycler
 
 import android.content.Context
 import android.graphics.PointF
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -66,6 +67,21 @@ class GridLayoutManager(
         val previousOffset = horizontalScrollOffset
         horizontalScrollOffset = position
         offsetChildrenHorizontal(previousOffset - horizontalScrollOffset)
+    }
+
+    override fun smoothScrollToPosition(recyclerView: RecyclerView, state: RecyclerView.State, position: Int) {
+        val itemsPerPage = getItemsPerPage()
+        val smoothScroller = object : LinearSmoothScroller(context) {
+            override fun computeScrollVectorForPosition(targetPosition: Int): PointF {
+                val targetPage = targetPosition / itemsPerPage
+                val startOfTargetPage = targetPage * width
+                val direction = if (startOfTargetPage > horizontalScrollOffset) 1 else -1
+                return PointF(direction.toFloat(), 0f)
+            }
+        }
+        val firstPositionOnTargetPage = position / itemsPerPage * itemsPerPage
+        smoothScroller.targetPosition = firstPositionOnTargetPage
+        startSmoothScroll(smoothScroller)
     }
 
     fun scrollToPage(page: Int) {
