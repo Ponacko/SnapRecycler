@@ -68,7 +68,7 @@ class GridLayoutManager(
         offsetChildrenHorizontal(previousOffset - horizontalScrollOffset)
     }
 
-    override fun smoothScrollToPosition(recyclerView: RecyclerView, state: RecyclerView.State, position: Int) {
+    override fun smoothScrollToPosition(recyclerView: RecyclerView, state: RecyclerView.State?, position: Int) {
         val itemsPerPage = getItemsPerPage()
         val smoothScroller = object : LinearSmoothScroller(context) {
             override fun calculateDxToMakeVisible(view: View, snapPreference: Int): Int {
@@ -82,9 +82,12 @@ class GridLayoutManager(
         startSmoothScroll(smoothScroller)
     }
 
-    fun scrollToPage(page: Int) {
-        val position = page * width
-         scrollToPosition(position)
+    fun smoothScrollToPage(recyclerView: RecyclerView, page: Int) {
+        val itemsPerPage = getItemsPerPage()
+        val position = page * itemsPerPage
+        recyclerView.post {
+            smoothScrollToPosition(recyclerView, null, position)
+        }
     }
 
     private fun scrollByInternal(dx: Int): Int {
