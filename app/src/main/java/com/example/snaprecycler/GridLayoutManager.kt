@@ -1,11 +1,12 @@
 package com.example.snaprecycler
 
 import android.content.Context
+import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
+
 
 class GridLayoutManager(
     private val numRows: Int,
@@ -39,9 +40,9 @@ class GridLayoutManager(
 
             val leftOffset: Int = if (isRTL()) {
                 // In RTL, start from the right and subtract the width
-                (getNumberOfPages() - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth
+                (getNumberOfPages() - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth + horizontalScrollOffset
             } else {
-                pageIndex * pageWidth + columnIndex * itemWidth
+                pageIndex * pageWidth + columnIndex * itemWidth + horizontalScrollOffset
             }
             val topOffset = rowIndex * itemHeight
 
@@ -59,6 +60,17 @@ class GridLayoutManager(
         val delta = scrollByInternal(dx)
         offsetChildrenHorizontal(-delta)
         return delta
+    }
+
+    override fun scrollToPosition(position: Int) {
+        val previousOffset = horizontalScrollOffset
+        horizontalScrollOffset = position
+        offsetChildrenHorizontal(previousOffset - horizontalScrollOffset)
+    }
+
+    fun scrollToPage(page: Int) {
+        val position = page * width
+         scrollToPosition(position)
     }
 
     private fun scrollByInternal(dx: Int): Int {
