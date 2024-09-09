@@ -27,6 +27,7 @@ class GridLayoutManager(
         if (itemCount == 0) {
             return
         }
+        detachAndScrapAttachedViews(recycler);
         val itemsPerPage = getItemsPerPage()
         val pageWidth = width
         val itemWidth = pageWidth / numColumns

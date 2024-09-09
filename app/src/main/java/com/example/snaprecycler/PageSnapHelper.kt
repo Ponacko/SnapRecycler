@@ -46,4 +46,13 @@ class PageSnapHelper(
         }
         return closestPage
     }
+
+    fun snapToNearestPage(recyclerView: RecyclerView?) {
+        val layoutManager = recyclerView?.layoutManager ?: return
+        val snapView = findSnapView(layoutManager)
+        if (snapView != null) {
+            val position = recyclerView.getChildAdapterPosition(snapView)
+            recyclerView.smoothScrollToPosition(position)
+        }
+    }
 }
