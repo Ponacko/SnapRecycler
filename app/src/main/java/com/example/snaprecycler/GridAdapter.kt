@@ -30,5 +30,22 @@ class GridAdapter(
         notifyItemMoved(fromPosition, toPosition)
     }
 
+    fun addItem(item: GridItem) {
+        itemList.add(item)
+        notifyItemInserted(itemList.size - 1)
+    }
+
+    fun addItem(item: GridItem, position: Int) {
+        itemList.add(position, item)
+        notifyItemInserted(position)
+    }
+
+    fun removeItem(position: Int): GridItem {
+        val removed = itemList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, itemList.size)
+        return removed
+    }
+
     override fun getItemCount(): Int = itemList.size
 }
