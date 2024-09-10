@@ -1,9 +1,7 @@
 package com.example.snaprecycler
 
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
 
@@ -53,11 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         val snapHelper = createPageSnapHelper(numRows, numColumns)
         snapHelper.attachToRecyclerView(recyclerView)
-
-        val itemTouchHelperCallback = ItemMoveCallback(adapter, snapHelper)
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-
         return recyclerView
     }
 }

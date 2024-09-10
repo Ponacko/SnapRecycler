@@ -4,7 +4,9 @@ import android.view.View
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import kotlin.math.abs
+
 
 class PageSnapHelper(
     private val pageSize: Int
@@ -17,7 +19,7 @@ class PageSnapHelper(
         { snapToNearestPage(recyclerView) })
     }
 
-    override fun findSnapView(layoutManager: RecyclerView.LayoutManager): View? {
+    override fun findSnapView(layoutManager: LayoutManager): View? {
         if (layoutManager.canScrollVertically()) {
             return findCenterView(
                 layoutManager,
@@ -33,7 +35,7 @@ class PageSnapHelper(
     }
 
     private fun findCenterView(
-        layoutManager: RecyclerView.LayoutManager,
+        layoutManager: LayoutManager,
         helper: OrientationHelper
     ): View? {
         val childCount = layoutManager.childCount
@@ -49,9 +51,10 @@ class PageSnapHelper(
         for (i in 0 until pages) {
             val index = i * pageSize
             if (index < childCount) {
-                val pageStartPosition = layoutManager.getChildAt(i * pageSize)
+                val pageStartPosition = layoutManager.getChildAt(index)
                 val childCenter = (helper.getDecoratedStart(pageStartPosition)
-                        + (helper.getDecoratedMeasurement(pageStartPosition) / 2))
+                            + (helper.getDecoratedMeasurement(pageStartPosition) / 2))
+
                 val absDistance = abs((childCenter - center).toDouble()).toInt()
 
                 if (absDistance < absClosest) {

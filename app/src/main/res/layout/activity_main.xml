@@ -9,6 +9,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:orientation="horizontal"
+        android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:id="@+id/recyclerView"
@@ -16,10 +17,11 @@
         android:layout_height="300dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:orientation="horizontal"
+        android:background="@color/black"
         android:id="@+id/recyclerView2"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recyclerView" />
 
