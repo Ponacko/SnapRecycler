@@ -83,6 +83,12 @@ class GridLayoutManager(
         startSmoothScroll(smoothScroller)
     }
 
+    // This method fixes a bug where the RecyclerView would scroll away when item is removed
+    override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
+        super.onItemsRemoved(recyclerView, positionStart, itemCount)
+        horizontalScrollOffset = 0
+    }
+
     fun smoothScrollToPage(recyclerView: RecyclerView, page: Int) {
         val itemsPerPage = getItemsPerPage()
         val position = page * itemsPerPage
