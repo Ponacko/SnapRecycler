@@ -10,11 +10,24 @@ class PageSnapHelper(
     private val pageSize: Int
 ) : LinearSnapHelper() {
 
+    override fun attachToRecyclerView(recyclerView: RecyclerView?) {
+        super.attachToRecyclerView(recyclerView)
+        val gridAdapter = recyclerView?.adapter as GridAdapter
+        gridAdapter.setOnDragListener(DragListener()
+        { snapToNearestPage(recyclerView) })
+    }
+
     override fun findSnapView(layoutManager: RecyclerView.LayoutManager): View? {
         if (layoutManager.canScrollVertically()) {
-            return findCenterView(layoutManager, OrientationHelper.createVerticalHelper(layoutManager))
+            return findCenterView(
+                layoutManager,
+                OrientationHelper.createVerticalHelper(layoutManager)
+            )
         } else if (layoutManager.canScrollHorizontally()) {
-            return findCenterView(layoutManager, OrientationHelper.createHorizontalHelper(layoutManager))
+            return findCenterView(
+                layoutManager,
+                OrientationHelper.createHorizontalHelper(layoutManager)
+            )
         }
         return null
     }
@@ -34,14 +47,17 @@ class PageSnapHelper(
         val pages = childCount / pageSize + 1
 
         for (i in 0 until pages) {
-            val pageStartPosition = layoutManager.getChildAt(i * pageSize)
-            val childCenter = (helper.getDecoratedStart(pageStartPosition)
-                    + (helper.getDecoratedMeasurement(pageStartPosition) / 2))
-            val absDistance = abs((childCenter - center).toDouble()).toInt()
+            val index = i * pageSize
+            if (index < childCount) {
+                val pageStartPosition = layoutManager.getChildAt(i * pageSize)
+                val childCenter = (helper.getDecoratedStart(pageStartPosition)
+                        + (helper.getDecoratedMeasurement(pageStartPosition) / 2))
+                val absDistance = abs((childCenter - center).toDouble()).toInt()
 
-            if (absDistance < absClosest) {
-                absClosest = absDistance
-                closestPage = pageStartPosition
+                if (absDistance < absClosest) {
+                    absClosest = absDistance
+                    closestPage = pageStartPosition
+                }
             }
         }
         return closestPage
