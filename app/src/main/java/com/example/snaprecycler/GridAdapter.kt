@@ -60,20 +60,12 @@ class GridAdapter(
 
     override fun onLongClick(view: View?): Boolean {
         val data = ClipData.newPlainText("", "")
-        val shadowBuilder = GridDragShadowBuilder(view!!)
-        view.startDragAndDrop(data, shadowBuilder, view, 0)
+        val shadowBuilder = View.DragShadowBuilder(view)
+        view?.startDragAndDrop(data, shadowBuilder, view, 0)
         return true
     }
 
     fun setOnDragListener(dragListener: DragListener) {
         this.dragListener = dragListener
     }
-
-    class GridDragShadowBuilder(view: View) : View.DragShadowBuilder(view) {
-        override fun onProvideShadowMetrics(size: Point, touch: Point) {
-            size.set(view.width, view.height)
-            touch.set(0, 0)
-        }
-    }
-
 }
