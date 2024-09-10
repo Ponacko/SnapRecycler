@@ -85,7 +85,11 @@ class GridLayoutManager(
             override fun calculateDxToMakeVisible(view: View, snapPreference: Int): Int {
                 val targetPage = targetPosition / itemsPerPage
                 val startOfTargetPage = targetPage * width
-                return horizontalScrollOffset - startOfTargetPage
+                return if (isRTL()) {
+                    horizontalScrollOffset - startOfTargetPage
+                } else {
+                    - horizontalScrollOffset + startOfTargetPage
+                }
             }
         }
         val firstPositionOnTargetPage = position / itemsPerPage * itemsPerPage
@@ -101,7 +105,11 @@ class GridLayoutManager(
 
     fun smoothScrollToPage(recyclerView: RecyclerView, page: Int) {
         val itemsPerPage = getItemsPerPage()
-        val position = page * itemsPerPage
+        val position = if (isRTL()) {
+            itemCount - (page * itemsPerPage) - 1
+        } else{
+            page * itemsPerPage
+        }
         recyclerView.post {
             smoothScrollToPosition(recyclerView, null, position)
         }
