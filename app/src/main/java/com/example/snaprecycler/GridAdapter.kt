@@ -1,17 +1,23 @@
 package com.example.snaprecycler
 
+import android.content.ClipData
+import android.graphics.Point
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class GridAdapter(
     private val itemList: MutableList<GridItem>
-) : RecyclerView.Adapter<GridAdapter.GridViewHolder>() {
+) : RecyclerView.Adapter<GridAdapter.GridViewHolder>(), View.OnLongClickListener {
+
+    private var dragListener: DragListener? = null
 
     class GridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.itemTextView)
+        val layout: LinearLayout = itemView.findViewById(R.id.item_grid)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridViewHolder {
@@ -22,6 +28,9 @@ class GridAdapter(
     override fun onBindViewHolder(holder: GridViewHolder, position: Int) {
         val currentItem = itemList[position]
         holder.textView.text = currentItem.name
+        holder.layout.setOnLongClickListener(this)
+        holder.layout.setOnDragListener(dragListener)
+        holder.layout.tag = position
     }
 
     fun moveItem(fromPosition: Int, toPosition: Int) {
@@ -48,4 +57,23 @@ class GridAdapter(
     }
 
     override fun getItemCount(): Int = itemList.size
+
+    override fun onLongClick(view: View?): Boolean {
+        val data = ClipData.newPlainText("", "")
+        val shadowBuilder = GridDragShadowBuilder(view!!)
+        view.startDragAndDrop(data, shadowBuilder, view, 0)
+        return true
+    }
+
+    fun setOnDragListener(dragListener: DragListener) {
+        this.dragListener = dragListener
+    }
+
+    class GridDragShadowBuilder(view: View) : View.DragShadowBuilder(view) {
+        override fun onProvideShadowMetrics(size: Point, touch: Point) {
+            size.set(view.width, view.height)
+            touch.set(0, 0)
+        }
+    }
+
 }
