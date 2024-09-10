@@ -1,7 +1,6 @@
 package com.example.snaprecycler
 
 import android.content.Context
-import android.graphics.PointF
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -14,8 +13,7 @@ class GridLayoutManager(
     private val context: Context
 ) : RecyclerView.LayoutManager() {
 
-
-    private var horizontalScrollOffset = 0
+    private var horizontalScrollOffset = -1
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams =
         RecyclerView.LayoutParams(
@@ -27,6 +25,7 @@ class GridLayoutManager(
         if (itemCount == 0) {
             return
         }
+        initializeHorizontalOffset()
         detachAndScrapAttachedViews(recycler);
         val itemsPerPage = getItemsPerPage()
         val pageWidth = width
@@ -41,7 +40,7 @@ class GridLayoutManager(
 
             val leftOffset: Int = if (isRTL()) {
                 // In RTL, start from the right and subtract the width
-                (getNumberOfPages() - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth + horizontalScrollOffset
+                (getNumberOfPages() - pageIndex) * pageWidth - (columnIndex + 1) * itemWidth - horizontalScrollOffset
             } else {
                 pageIndex * pageWidth + columnIndex * itemWidth + horizontalScrollOffset
             }
@@ -52,6 +51,17 @@ class GridLayoutManager(
 
             measureChildWithMargins(view, 0, 0)
             layoutDecorated(view, leftOffset, topOffset, leftOffset + itemWidth, topOffset + itemHeight)
+        }
+    }
+
+    private fun initializeHorizontalOffset() {
+        if (horizontalScrollOffset == -1) {
+            horizontalScrollOffset = if (isRTL()) {
+                // start of the last page
+                getTotalWidth() - width
+            } else {
+                0
+            }
         }
     }
 
@@ -99,7 +109,7 @@ class GridLayoutManager(
 
     private fun scrollByInternal(dx: Int): Int {
         var delta = dx
-        val totalWidth = width * getNumberOfPages()
+        val totalWidth = getTotalWidth()
 
         if (horizontalScrollOffset + delta < 0) {
             delta = -horizontalScrollOffset
@@ -116,6 +126,8 @@ class GridLayoutManager(
         val itemsPerPage = getItemsPerPage()
         return (itemCount + itemsPerPage - 1) / itemsPerPage
     }
+
+    private fun getTotalWidth(): Int = width * getNumberOfPages()
 
     private fun getItemsPerPage() = numRows * numColumns
 
